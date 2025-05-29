@@ -1,0 +1,16 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Вакансии</h1>
+<ul>
+{% for job in jobs %}
+    <li>
+        <h2>{{ job.title }}</h2>
+        <p>{{ job.description }}</p>
+        <p>Дата публикации: {{ job.posted_date|date:"d/m/Y" }}</p>
+    </li>
+{% empty %}
+    <li>Нет вакансий.</li>
+{% endfor %}
+</ul>
+{% endblock %}

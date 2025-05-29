@@ -1,0 +1,16 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Список автомобилей</h1>
+<a href="{% url 'car_create' %}">Добавить автомобиль</a>
+<ul>
+{% for car in cars %}
+    <li>{{ car.brand }} {{ car.model }} ({{ car.license_plate }}) 
+        <a href="{% url 'car_update' car.pk %}">Редактировать</a>
+        <a href="{% url 'car_delete' car.pk %}">Удалить</a>
+    </li>
+{% empty %}
+    <li>Нет автомобилей</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Панель администратора</h1>
+
+<h2>Клиенты</h2>
+<ul>
+{% for client in clients %}
+    <li>{{ client.name }} ({{ client.email }}) - Возраст: {{ client.age }}</li>
+{% endfor %}
+</ul>
+
+<h2>Автомобили</h2>
+<ul>
+{% for car in cars %}
+    <li>{{ car.brand }} {{ car.model }} ({{ car.license_plate }}) - Владельцы: 
+        {% for client in car.clients.all %}
+            {{ client.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Парковочные места</h2>
+<ul>
+{% for spot in parking_spots %}
+    <li>Место #{{ spot.number }}: {{ spot.price }} BYN 
+        {% if spot.is_occupied %}
+            (Занято: {{ spot.car.brand }} {{ spot.car.model }})
+        {% else %}
+            (Свободно)
+        {% endif %}
+        <a href="{% url 'update_spot_price' spot.id %}">[Изменить цену]</a>
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Занятые места</h2>
+<ul>
+{% for spot in occupied_spots %}
+    <li>Место #{{ spot.number }}: {{ spot.car.brand }} {{ spot.car.model }} - Владельцы: 
+        {% for client in spot.car.clients.all %}
+            {{ client.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Клиенты с долгами</h2>
+<ul>
+{% for client in clients_with_debt %}
+    <li>{{ client.name }}: {{ client.total_debt }} BYN</li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'client_list' %}">Список клиентов</a>
+<a href="{% url 'car_list' %}">Список автомобилей</a>
+<a href="{% url 'parkingspot_list' %}">Список парковочных мест</a>
+<a href="{% url 'biggest_debtor' %}">Клиент с наибольшим долгом</a>
+<a href="{% url 'cars_with_multiple_owners' %}">Автомобили с несколькими владельцами</a>
+<a href="{% url 'car_with_min_debt' %}">Автомобиль с наименьшим долгом</a>
+<a href="{% url 'total_debt' %}">Сумма долгов за период</a>
+<a href="{% url 'cars_by_brand' %}">Автомобили по марке</a>
+{% endblock %}

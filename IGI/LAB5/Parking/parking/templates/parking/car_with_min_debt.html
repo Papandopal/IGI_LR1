@@ -1,0 +1,12 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Автомобиль с наименьшим долгом</h1>
+{% if car %}
+    <p>Автомобиль: {{ car }}</p>
+    <p>Долг: {{ min_debt }} руб.</p>
+    <p>Период: {{ start_date }} - {{ end_date }}</p>
+{% else %}
+    <p>Нет данных за указанный период.</p>
+{% endif %}
+{% endblock %}

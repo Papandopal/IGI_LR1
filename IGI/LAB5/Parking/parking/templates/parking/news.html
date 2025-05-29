@@ -1,0 +1,19 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Новости</h1>
+<ul>
+{% for article in articles %}
+    <li>
+        <h2>{{ article.title }}</h2>
+        <p>{{ article.summary }}</p>
+        {% if article.image_url %}
+            <img src="{{ article.image_url }}" alt="{{ article.title }}" width="200">
+        {% endif %}
+        <p>Дата: {{ article.created_at|date:"d/m/Y" }}</p>
+    </li>
+{% empty %}
+    <li>Нет новостей.</li>
+{% endfor %}
+</ul>
+{% endblock %}

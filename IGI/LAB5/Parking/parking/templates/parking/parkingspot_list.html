@@ -1,0 +1,19 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Список парковочных мест</h1>
+<a href="{% url 'parkingspot_create' %}">Добавить парковочное место</a>
+<ul>
+{% for spot in parking_spots %}
+    <li>
+        Место №{{ spot.number }} (Цена: {{ spot.price }} руб.) 
+        - {% if spot.is_occupied %}Занято ({{ spot.car.brand }} {{ spot.car.model }}){% else %}Свободно{% endif %}
+        <a href="{% url 'parkingspot_update' spot.pk %}">Редактировать</a>
+        <a href="{% url 'parkingspot_delete' spot.pk %}">Удалить</a>
+    </li>
+{% empty %}
+    <li>Парковочных мест нет. <a href="{% url 'parkingspot_create' %}">Добавить</a></li>
+{% endfor %}
+</ul>
+<a href="{% url 'admin_dashboard' %}">Назад</a>
+{% endblock %}

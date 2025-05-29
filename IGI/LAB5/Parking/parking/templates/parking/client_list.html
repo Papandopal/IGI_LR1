@@ -1,0 +1,20 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Список клиентов</h1>
+{% if user.is_superuser %}
+    <a href="{% url 'client_create' %}">Добавить клиента</a>
+{% endif %}
+<ul>
+{% for client in clients %}
+    <li>{{ client.name }} ({{ client.email }}) 
+        <a href="{% url 'client_update' client.pk %}">Редактировать</a>
+        {% if user.is_superuser or user.is_client%}
+            <a href="{% url 'client_delete' client.pk %}">Удалить</a>
+        {% endif %}
+    </li>
+{% empty %}
+    <li>Нет клиентов</li>
+{% endfor %}
+</ul>
+{% endblock %}

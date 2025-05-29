@@ -1,0 +1,20 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Контакты</h1>
+<ul>
+{% for employee in employees %}
+    <li>
+        <h2>{{ employee.name }}</h2>
+        {% if employee.photo_url %}
+            <img src="{{ employee.photo_url }}" alt="{{ employee.name }}" width="150">
+        {% endif %}
+        <p>Роль: {{ employee.role }}</p>
+        <p>Телефон: {{ employee.phone }}</p>
+        <p>Email: {{ employee.email }}</p>
+    </li>
+{% empty %}
+    <li>Нет сотрудников.</li>
+{% endfor %}
+</ul>
+{% endblock %}

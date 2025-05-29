@@ -1,0 +1,7 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Ошибка</h1>
+<p>{{ message }}</p>
+<a href="{% url 'client_dashboard' %}">Вернуться</a>
+{% endblock %}

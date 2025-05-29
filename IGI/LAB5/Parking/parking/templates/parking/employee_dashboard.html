@@ -1,0 +1,214 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Панель сотрудника</h1>
+<h2>Добро пожаловать, {{ employee.name }}!</h2>
+
+<h2>Клиенты</h2>
+<ul>
+{% for client in clients %}
+    <li>{{ client.name }} ({{ client.email }}) - Возраст: {{ client.age }}</li>
+{% endfor %}
+</ul>
+
+<h2>Счета</h2>
+<ul>
+{% for invoice in invoices %}
+    <li>Счёт #{{ invoice.code }}: {{ invoice.spot_price }} BYN 
+        {% if invoice.debt > 0 %}
+            (Долг: {{ invoice.debt }} BYN)
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Занятые места</h2>
+<ul>
+{% for spot in occupied_spots %}
+    <li>Место #{{ spot.number }}: {{ spot.car.brand }} {{ spot.car.model }} - Владельцы: 
+        {% for client in spot.car.clients.all %}
+            {{ client.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Клиенты с долгами</h2>
+<ul>
+{% for client in clients_with_debt %}
+    <li>{{ client.name }}: {{ client.total_debt }} BYN</li>
+{% endfor %}
+</ul>
+
+<h2>Статистика</h2>
+<div>
+    <label for="step-select">Выберите шаг:</label>
+    <select id="step-select" onchange="updateCharts()">
+        <option value="day" {% if step == 'day' %}selected{% endif %}>День</option>
+        <option value="week" {% if step == 'week' %}selected{% endif %}>Неделя</option>
+        <option value="month" {% if step == 'month' %}selected{% endif %}>Месяц</option>
+    </select>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Прибыль</h3>
+        <canvas id="profitChart"></canvas>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Новые клиенты</h3>
+        <canvas id="newClientsChart"></canvas>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Все клиенты</h3>
+        <canvas id="allClientsChart"></canvas>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Неоплаченные счета</h3>
+        <canvas id="unpaidInvoicesChart"></canvas>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Сумма долгов</h3>
+        <canvas id="debtChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartData = {{ chart_data|safe }};
+
+    let charts = {};
+
+    function initializeCharts() {
+        const ctxProfit = document.getElementById('profitChart').getContext('2d');
+        const ctxNewClients = document.getElementById('newClientsChart').getContext('2d');
+        const ctxAllClients = document.getElementById('allClientsChart').getContext('2d');
+        const ctxUnpaidInvoices = document.getElementById('unpaidInvoicesChart').getContext('2d');
+        const ctxDebt = document.getElementById('debtChart').getContext('2d');
+
+        charts.profit = new Chart(ctxProfit, {
+            type: 'line',
+            data: {
+                labels: chartData.profit.labels,
+                datasets: [{
+                    label: 'Прибыль (BYN)',
+                    data: chartData.profit.values,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: chartData.profit.values.some(v => v > 0) },
+                    tooltip: { enabled: chartData.profit.values.some(v => v > 0) }
+                }
+            }
+        });
+
+        charts.newClients = new Chart(ctxNewClients, {
+            type: 'bar',
+            data: {
+                labels: chartData.new_clients.labels,
+                datasets: [{
+                    label: 'Новые клиенты',
+                    data: chartData.new_clients.values,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: chartData.new_clients.values.some(v => v > 0) },
+                    tooltip: { enabled: chartData.new_clients.values.some(v => v > 0) }
+                }
+            }
+        });
+
+        charts.allClients = new Chart(ctxAllClients, {
+            type: 'line',
+            data: {
+                labels: chartData.all_clients.labels,
+                datasets: [{
+                    label: 'Все клиенты',
+                    data: chartData.all_clients.values,
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: chartData.all_clients.values.some(v => v > 0) },
+                    tooltip: { enabled: chartData.all_clients.values.some(v => v > 0) }
+                }
+            }
+        });
+
+        charts.unpaidInvoices = new Chart(ctxUnpaidInvoices, {
+            type: 'bar',
+            data: {
+                labels: chartData.unpaid_invoices.labels,
+                datasets: [{
+                    label: 'Неоплаченные счета',
+                    data: chartData.unpaid_invoices.values,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: chartData.unpaid_invoices.values.some(v => v > 0) },
+                    tooltip: { enabled: chartData.unpaid_invoices.values.some(v => v > 0) }
+                }
+            }
+        });
+
+        charts.debt = new Chart(ctxDebt, {
+            type: 'line',
+            data: {
+                labels: chartData.debt.labels,
+                datasets: [{
+                    label: 'Сумма долгов (BYN)',
+                    data: chartData.debt.values,
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: chartData.debt.values.some(v => v > 0) },
+                    tooltip: { enabled: chartData.debt.values.some(v => v > 0) }
+                }
+            }
+        });
+    }
+
+    function updateCharts() {
+        const step = document.getElementById('step-select').value;
+        window.location.href = `?step=${step}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeCharts);
+</script>
+
+<a href="{% url 'logout' %}">Выйти</a>
+{% endblock %}

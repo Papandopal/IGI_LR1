@@ -1,0 +1,12 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Освободить парковочное место?</h1>
+<p>Вы уверены, что хотите освободить место №{{ spot.number }}?</p>
+<p>Автомобиль: {{ car.brand }} {{ car.model }} ({{ car.license_plate }})</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Да, освободить</button>
+    <a href="{% url 'client_dashboard' %}">Отмена</a>
+</form>
+{% endblock %}

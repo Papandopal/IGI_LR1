@@ -1,0 +1,11 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Автомобили по марке</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="brand">Марка:</label>
+    <input type="text" name="brand" required>
+    <button type="submit">Найти</button>
+</form>
+{% endblock %}

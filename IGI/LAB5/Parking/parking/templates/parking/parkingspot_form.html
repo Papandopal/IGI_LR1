@@ -1,0 +1,41 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>{% if object %}Редактировать парковочное место{% else %}Добавить парковочное место{% endif %}</h1>
+<form method="post">
+    {% csrf_token %}
+    {% if form.errors %}
+        <div class="error">
+            <p>Пожалуйста, исправьте следующие ошибки:</p>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div>
+        <label for="{{ form.number.id_for_label }}">Номер места:</label>
+        {{ form.number }}
+    </div>
+    <div>
+        <label for="{{ form.price.id_for_label }}">Цена:</label>
+        {{ form.price }}
+    </div>
+    <div>
+        <label for="{{ form.is_occupied.id_for_label }}">Занято:</label>
+        {{ form.is_occupied }}
+    </div>
+    {% if object and object.is_occupied and object.car %}
+        <p>Занимающий автомобиль: {{ object.car.brand }} {{ object.car.model }} ({{ object.car.license_plate }})</p>
+        <p>Снимите галочку "Занято", чтобы освободить место.</p>
+    {% endif %}
+    <button type="submit">Сохранить</button>
+    <a href="{% url 'parkingspot_list' %}">Отмена</a>
+</form>
+{% endblock %}

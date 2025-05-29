@@ -1,0 +1,13 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Вход</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="username">Имя пользователя:</label>
+    <input type="text" name="username" required>
+    <label for="password">Пароль:</label>
+    <input type="password" name="password" required>
+    <button type="submit">Войти</button>
+</form>
+{% endblock %}

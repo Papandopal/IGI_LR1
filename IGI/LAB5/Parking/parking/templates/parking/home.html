@@ -1,0 +1,82 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Добро пожаловать на сайт парковки!</h1>
+
+<h2>Категории услуг</h2>
+<ul>
+    <li><a href="?">Все категории</a></li>
+    {% for category in categories %}
+        <li><a href="?category={{ category.name }}{% if price_sort %}&price_sort={{ price_sort }}{% endif %}">{{ category.name }}</a></li>
+    {% endfor %}
+</ul>
+
+<h2>Услуги</h2>
+<ul>
+    <li><a href="?">Все услуги</a></li>
+    {% for service in services %}
+        <li>{{ service.name }} - {{ service.price }} руб.</li>
+    {% endfor %}
+</ul>
+<form method="get" action="">
+    <label for="price_sort">Сортировка по цене:</label>
+    <select name="price_sort" id="price_sort" onchange="this.form.submit()">
+        <option value="">Без сортировки</option>
+        <option value="asc" {% if price_sort == 'asc' %}selected{% endif %}>По возрастанию</option>
+        <option value="desc" {% if price_sort == 'desc' %}selected{% endif %}>По убыванию</option>
+    </select>
+    {% if category_filter %}
+        <input type="hidden" name="category" value="{{ category_filter }}">
+    {% endif %}
+</form>
+
+<h2>Промокоды</h2>
+<ul>
+{% for promo in promo_codes %}
+    <li>{{ promo.code }} (действует до {{ promo.valid_until|date:"d/m/Y" }})</li>
+{% endfor %}
+</ul>
+
+<h2>Купоны</h2>
+<ul>
+{% for coupon in coupons %}
+    <li>{{ coupon.code }} (действует до {{ coupon.valid_until|date:"d/m/Y" }})</li>
+{% endfor %}
+</ul>
+
+<h2>Шутка дня</h2>
+<p>{{ joke.setup }}</p>
+<p>{{ joke.punchline }}</p>
+
+<h2>Цитата дня</h2>
+<p>{{ quote.body }} - {{ quote.author }}</p>
+
+<h2>Статистические показатели</h2>
+<ul>
+    <li>Общая прибыль: {{ total_profit }} руб.</li>
+    <li>Статистика по сдаче парковочных мест:
+        <ul>
+            <li>Среднее: {{ avg_rental|floatformat:2 }} руб.</li>
+            <li>Медиана: {{ median_rental|floatformat:2 }} руб.</li>
+            <li>Мода: {{ mode_rental|floatformat:2 }} руб.</li>
+        </ul>
+    </li>
+    <li>Статистика по возрасту клиентов:
+        <ul>
+            <li>Средний возраст: {{ avg_age|floatformat:2 }} лет</li>
+            <li>Медианный возраст: {{ median_age|floatformat:2 }} лет</li>
+        </ul>
+    </li>
+    <li>Наиболее прибыльное парковочное место: Место {{ most_profitable_spot }} (прибыль: {{ most_profitable_spot_profit }} руб.)</li>
+</ul>
+
+{% if is_admin %}
+    <a href="/admin_dashboard/">Админ панель</a>
+{% elif is_client %}
+    <a href="/client/">Личный кабинет</a>
+{% elif is_employee %}
+    <a href="/employee/">Панель сотрудника</a>
+{% else %}
+    <a href="/login/">Войти</a> | <a href="/signup/">Зарегистрироваться</a>
+{% endif %}
+{% endblock %}

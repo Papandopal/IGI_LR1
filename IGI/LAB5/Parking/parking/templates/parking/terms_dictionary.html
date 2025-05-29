@@ -1,0 +1,16 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Словарь терминов и понятий</h1>
+<ul>
+{% for term in terms %}
+    <li>
+        <h3>{{ term.term }}</h3>
+        <p>{{ term.definition }}</p>
+        <p>Добавлено: {{ term.added_date|date:"d/m/Y" }}</p>
+    </li>
+{% empty %}
+    <li>Нет терминов.</li>
+{% endfor %}
+</ul>
+{% endblock %}

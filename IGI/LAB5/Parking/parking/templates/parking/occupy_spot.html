@@ -1,0 +1,17 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Занять парковочное место</h1>
+<p>Место: {{ spot.number }} (Цена: {{ spot.price }} руб.)</p>
+<form method="post">
+    {% csrf_token %}
+    <label for="car">Выберите автомобиль:</label>
+    <select name="car" id="car" required>
+        {% for car in cars %}
+            <option value="{{ car.id }}">{{ car.brand }} {{ car.model }} ({{ car.license_plate }})</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Занять</button>
+</form>
+<a href="{% url 'client_dashboard' %}">Отмена</a>
+{% endblock %}

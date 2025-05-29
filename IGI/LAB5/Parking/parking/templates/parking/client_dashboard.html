@@ -1,0 +1,90 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Личный кабинет клиента</h1>
+<h2>Добро пожаловать, {{ client.name }}!</h2>
+
+<h3>Ваши автомобили</h3>
+{% if cars %}
+    <ul>
+    {% for car in cars %}
+        <li>
+            {{ car.brand }} {{ car.model }} ({{ car.license_plate }})
+            {% with car.clients.all as all_clients %}
+                {% if all_clients|length > 1 %}
+                    (Совладельцы: {% for other_client in all_clients %}{% if other_client != client %}{{ other_client.name }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %})
+                {% endif %}
+            {% endwith %}
+            <a href="{% url 'car_update' car.id %}">[Редактировать]</a>
+            <a href="{% url 'car_delete' car.id %}">[Удалить]</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>У вас нет автомобилей.</p>
+{% endif %}
+
+<h3>Ваши счета</h3>
+{% if invoices %}
+    <ul>
+    {% for invoice in invoices %}
+        <li>
+            Счёт #{{ invoice.code }} от {{ invoice.issue_date }}: {{ invoice.spot_price }} BYN
+            {% if invoice.debt > 0 %}
+                (Долг: {{ invoice.debt }} BYN)
+            {% endif %}
+            {% if not invoice.payment_date %}
+                <a href="{% url 'pay_invoice' invoice.id %}">[Оплатить]</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>У вас нет счетов.</p>
+{% endif %}
+
+<h3>Доступные парковочные места</h3>
+{% if parking_spots %}
+    <ul>
+    {% for spot in parking_spots %}
+        <li>
+            Место #{{ spot.number }}: {{ spot.price }} BYN
+            {% if spot.is_occupied %}
+                (Занято)
+            {% else %}
+                <a href="{% url 'occupy_spot' spot.id %}">[Занять]</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет доступных парковочных мест.</p>
+{% endif %}
+
+<h3>Календарь на {{ month }}/{{ year }}</h3>
+<table border="1">
+    <tr>
+        {% for day in "Пн Вт Ср Чт Пт Сб Вс" %}
+            <th>{{ day }}</th>
+        {% endfor %}
+    </tr>
+    {% for week in calendar %}
+        <tr>
+        {% for day in week %}
+            <td {% if day == today_day %}style="background-color: yellow;"{% endif %}>
+                {% if day != 0 %}
+                    {{ day }}
+                {% endif %}
+            </td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+
+<p>Текущее время (UTC): {{ current_date_utc }}</p>
+<p>Текущее время ({{ client_timezone }}): {{ current_date_local }}</p>
+
+<a href="{% url 'client_update' client.id %}">Редактировать профиль</a>
+<a href="{% url 'car_create' %}">Добавить автомобиль</a>
+<a href="{% url 'logout' %}">Выйти</a>
+{% endblock %}

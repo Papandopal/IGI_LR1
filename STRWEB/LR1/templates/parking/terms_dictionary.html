@@ -1,0 +1,318 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-question-circle text-primary"></i>
+                Словарь терминов и понятий
+            </h1>
+            <p class="lead text-muted mb-4">
+                Часто задаваемые вопросы и ответы по услугам парковки
+            </p>
+        </div>
+    </div>
+
+    <!-- Фильтры и поиск -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex gap-3">
+                <!-- Поиск -->
+                <div class="flex-grow-1">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               name="search" 
+                               value="{{ search_query }}" 
+                               placeholder="Поиск по вопросам и ответам...">
+                    </div>
+                </div>
+                
+                <!-- Фильтр по категории -->
+                <div class="flex-shrink-0">
+                    <select name="category" class="form-select" style="min-width: 200px;">
+                        <option value="">Все категории</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.value }}" {% if cat.value == current_category %}selected{% endif %}>
+                                {{ cat.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i>
+                    Фильтр
+                </button>
+                
+                {% if search_query or current_category %}
+                    <a href="{% url 'terms_dictionary' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                        Сброс
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <div class="col-md-4 text-end">
+            <div class="text-muted">
+                <small>
+                    <i class="fas fa-info-circle"></i>
+                    Найдено: {{ terms.count }} вопрос{{ terms.count|pluralize:"ов" }}
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Аккордеон -->
+    <div class="row">
+        <div class="col-12">
+            {% if terms %}
+                <div class="accordion" id="faqAccordion">
+                    {% for term in terms %}
+                        <div class="accordion-item mb-2 shadow-sm">
+                            <h2 class="accordion-header" id="heading{{ term.id }}">
+                                <button class="accordion-button collapsed" 
+                                        type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse{{ term.id }}" 
+                                        aria-expanded="false" 
+                                        aria-controls="collapse{{ term.id }}"
+                                        onclick="incrementViews({{ term.id }})">
+                                    <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                        <div class="flex-grow-1">
+                                            <strong>{{ term.question }}</strong>
+                                        </div>
+                                        <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                                            {% if term.category %}
+                                                <span class="badge bg-secondary">{{ term.get_category_display }}</span>
+                                            {% endif %}
+                                            <small class="text-muted">
+                                                <i class="fas fa-eye"></i>
+                                                <span id="views-{{ term.id }}">{{ term.views_count }}</span>
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar"></i>
+                                                {{ term.added_date|date:"d.m.Y" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ term.id }}" 
+                                 class="accordion-collapse collapse" 
+                                 aria-labelledby="heading{{ term.id }}" 
+                                 data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-1 text-center">
+                                            <i class="fas fa-lightbulb text-warning fa-2x"></i>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="answer-content">
+                                                {{ term.answer|linebreaks }}
+                                            </div>
+                                            
+                                            <hr class="my-3">
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="text-muted">
+                                                    <small>
+                                                        <i class="fas fa-clock"></i>
+                                                        Добавлено: {{ term.added_date|date:"d.m.Y H:i" }}
+                                                        {% if term.updated_date != term.added_date %}
+                                                            | Обновлено: {{ term.updated_date|date:"d.m.Y H:i" }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                                
+                                                <div class="d-flex gap-2">
+                                                    <button class="btn btn-sm btn-outline-success" 
+                                                            onclick="markHelpful({{ term.id }}, true)"
+                                                            title="Полезно">
+                                                        <i class="fas fa-thumbs-up"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger" 
+                                                            onclick="markHelpful({{ term.id }}, false)"
+                                                            title="Не полезно">
+                                                        <i class="fas fa-thumbs-down"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-search fa-4x text-muted"></i>
+                    </div>
+                    <h3 class="text-muted">Вопросы не найдены</h3>
+                    <p class="text-muted">
+                        {% if search_query or current_category %}
+                            Попробуйте изменить параметры поиска или фильтрации.
+                        {% else %}
+                            В настоящее время нет доступных вопросов и ответов.
+                        {% endif %}
+                    </p>
+                    {% if search_query or current_category %}
+                        <a href="{% url 'terms_dictionary' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
+                            Показать все вопросы
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Дополнительная информация -->
+    {% if terms %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-info-circle text-info"></i>
+                            Не нашли ответ на свой вопрос?
+                        </h5>
+                        <p class="card-text">
+                            Если вы не нашли ответ на интересующий вас вопрос, 
+                            свяжитесь с нами любым удобным способом.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'contacts' %}" class="btn btn-info">
+                                <i class="fas fa-phone"></i>
+                                Контакты
+                            </a>
+                            {% if is_client %}
+                                <a href="{% url 'reviews' %}" class="btn btn-outline-info">
+                                    <i class="fas fa-comment"></i>
+                                    Оставить отзыв
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- JavaScript для интерактивности -->
+<script>
+// Функция для увеличения счетчика просмотров
+function incrementViews(termId) {
+    fetch(`/terms/${termId}/view/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`views-${termId}`).textContent = data.views;
+        }
+    })
+    .catch(error => {
+        console.log('Ошибка при обновлении счетчика просмотров:', error);
+    });
+}
+
+// Функция для отметки полезности (заглушка)
+function markHelpful(termId, isHelpful) {
+    const action = isHelpful ? 'полезным' : 'не полезным';
+    // Здесь можно добавить AJAX запрос для сохранения оценки
+    alert(`Спасибо за отзыв! Вы отметили этот ответ как ${action}.`);
+}
+
+// Автоматическая отправка формы при изменении категории
+document.querySelector('select[name="category"]').addEventListener('change', function() {
+    this.form.submit();
+});
+
+// Подсветка найденного текста
+document.addEventListener('DOMContentLoaded', function() {
+    const searchQuery = '{{ search_query|escapejs }}';
+    if (searchQuery) {
+        highlightSearchTerms(searchQuery);
+    }
+});
+
+function highlightSearchTerms(query) {
+    const terms = query.toLowerCase().split(' ').filter(term => term.length > 2);
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    
+    accordionItems.forEach(item => {
+        const content = item.innerHTML;
+        let highlightedContent = content;
+        
+        terms.forEach(term => {
+            const regex = new RegExp(`(${term})`, 'gi');
+            highlightedContent = highlightedContent.replace(regex, '<mark>$1</mark>');
+        });
+        
+        if (highlightedContent !== content) {
+            item.innerHTML = highlightedContent;
+        }
+    });
+}
+</script>
+
+<!-- CSRF Token для AJAX запросов -->
+{% csrf_token %}
+
+<style>
+.accordion-button:not(.collapsed) {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(33, 150, 243, 0.25);
+}
+
+.answer-content {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+mark {
+    background-color: #fff3cd;
+    padding: 0.1em 0.2em;
+    border-radius: 0.2em;
+}
+
+.accordion-item {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem !important;
+}
+
+.accordion-item:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+.accordion-button {
+    border-radius: 0.5rem !important;
+}
+
+.accordion-button:not(.collapsed) {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+</style>
+{% endblock %}

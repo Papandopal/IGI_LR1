@@ -1,0 +1,36 @@
+{% extends 'parking/base.html' %}
+{% load static %}
+{% block title %}{{ article.title }} — Новости PARKING{% endblock %}
+{% block content %}
+<div class="layout-wide">
+    <article class="page-section section--highlight" data-section="news-detail">
+        <header class="news-header">
+            <a href="{% url 'news' %}" data-role="nav-link">← ко всем новостям</a>
+            <h1 class="section__title">{{ article.title }}</h1>
+            <div class="news-meta">
+                <span>{{ article.author }}</span>
+                <span>{{ article.category }}</span>
+                <span>{{ article.published_at|date:"d.m.Y H:i" }}</span>
+                <span>{{ article.views_count }} просмотров</span>
+            </div>
+        </header>
+        {% if article.image %}
+            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image" style="max-height: 320px; object-fit: cover; border-radius: 16px;">
+        {% endif %}
+        <div class="news-body">
+            {{ article.content|linebreaks }}
+        </div>
+        {% if article.get_tags_list %}
+            <div class="tag-cloud" data-note="info-tip">
+                {% for tag in article.get_tags_list %}
+                    <span class="pill">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <footer class="quote-block" data-note="important-tip">
+            <p>Спасибо, что следите за обновлениями PARKING.</p>
+            <q lang="ru">Мы создаём комфортные и безопасные парковочные пространства</q>
+        </footer>
+    </article>
+</div>
+{% endblock %}

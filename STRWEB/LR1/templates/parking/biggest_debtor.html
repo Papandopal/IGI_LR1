@@ -1,0 +1,12 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Клиент с наибольшим долгом</h1>
+{% if debtor %}
+    <p>Клиент: {{ debtor.name }}</p>
+    <p>Долг: {{ max_debt }} руб.</p>
+    <p>Последний платеж: {{ last_payment|default:"Нет платежей" }}</p>
+{% else %}
+    <p>Нет должников.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,135 @@
+<form action="http://example.com/app/profile.php"
+method="post">
+Имя:
+<input type="text" name="username"><br>
+Адрес эл. почты:
+<input type="text" name="email"><br>
+Пол:<br>
+<input type="radio" name="sex" value="male">мужской<br>
+<input type="radio" name="sex" value="female">женский<br>
+<input type="submit" value="Отправить">
+<input type="reset" value="Очистить">
+</form>
+<textarea placeholder="acceptcharset
+autocomplete
+
+название кодировки для данных формы
+
+enctype
+
+способ кодирования данных формы:
+
+автозаполнение полей формы (on|off) (HTML5)
+application/x-www-form-urlencoded,
+multipart/form-data, text/plain
+
+name
+
+имя формы (для доступа к элементам через скрипты)
+
+novalidate
+
+(логический) отменяет встроенную в браузер проверку
+данных формы на корректность ввода (HTML5)
+
+target
+
+куда будет загружаться возвращаемый результат от
+сервера (фрейм, окно, новое окно, …)">
+<blockquote>Элемент input – основные
+атрибуты
+name
+
+уникальное имя элемента, используется при отправке
+данных на сервер
+
+value
+
+значение элемента формы
+
+autocomplet автозаполнение (для конкретного поля)
+e
+disabled
+блокирует доступ и изменение элемента: не работает
+
+переход по tab, значение не передается на сервер
+
+readonly
+
+значение элемента не может изменяться
+
+Для элемента input работают атрибуты, связанные с
+получением фокуса и клавиатурными сокращениями.
+
+Элемент input – некоторые
+новые атрибуты
+autofocus
+
+(логический) автоматически устанавливает фокус в поле
+
+form
+
+связывает поле с формой по идентификатору формы (её атрибут id).
+Необходим, когда поле располагается за пределами формы
+(например, по соображениям дизайна)
+
+formaction
+перекрывают значения соответствующих атрибутов формы.
+formenctype
+Задаются для кнопок!
+formmethod
+formnovalidate
+formtarget
+placeholder
+
+выводит текст внутри поля формы, который исчезает при получении
+фокуса или при наборе текста
+
+required
+
+(логический) поле формы обязательно для заполнения</blockquote>
+
+<form action="http://server.com" method="post">
+<fieldset>
+<legend>Атрибуты элемента img – 2
+Так как alt и title обычно не содержат большой текст,
+атрибут longdesc позволяет указать адрес документа с
+аннотаций к картинке (+ речевые браузеры).
+Логический атрибут ismap сообщает, что картинка
+является серверной картой-изображением. Если
+изображение помещено в контейнер a, при нажатии на
+сервер будут передаваться координаты точки нажатия.</legend>
+Login:
+<input type="text" name="login"
+size="10" autocomplete="on">
+<br>
+Password:
+<input type="password" name="pass"
+maxlength="8">
+<br><br>
+<input type="submit" value="Log in">
+</fieldset>
+</form>
+
+
+<img src="aboba.228" alt="Для новых типов элементов доступны и новые атрибуты.
+min
+(max)
+
+нижнее (верхнее) значение для ввода числа или даты
+(type=number|range|date)
+
+pattern регулярное выражение для ввода и проверки данных в поле
+формы (type=email|tel|text|search|url)
+step
+
+шаг изменения числа для ползунков и полей ввода чисел
+(type=number|range)">
+
+<input list="aaaa">
+
+<datalist id="aaaa">
+    <option value="A"/>
+    <option value="B"/>
+    <option value="C"/>
+</datalist>

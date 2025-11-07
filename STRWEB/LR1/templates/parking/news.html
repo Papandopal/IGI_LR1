@@ -1,0 +1,92 @@
+{% extends 'parking/base.html' %}
+{% load static %}
+{% block title %}Новости - PARKING{% endblock %}
+{% block content %}
+<div class="layout-wide">
+    <section class="page-section" data-section="news-list">
+        <header class="news-header">
+            <h1 class="section__title">Новости</h1>
+            <p class="section__subtitle">Актуальные события, обновления сервиса и специальные предложения компании PARKING.</p>
+            <form method="get" class="news-controls">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск по новостям...">
+                <select name="category">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="submit-button">Найти</button>
+                {% if search_query or current_category %}
+                    <a href="{% url 'news' %}" data-role="nav-link">Сбросить фильтры</a>
+                {% endif %}
+            </form>
+        </header>
+
+        {% if featured_articles %}
+            <section class="page-section section--highlight" data-section="news-featured">
+                <h2 class="section__title">Рекомендуем к прочтению</h2>
+                <div class="news-grid">
+                    {% for article in featured_articles %}
+                        <article class="news-card" data-role="featured">
+                            {% if article.image %}
+                                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image">
+                            {% endif %}
+                            <div>
+                                <h3>{{ article.title }}</h3>
+                                <p>{{ article.summary }}</p>
+                                <div class="news-meta">
+                                    <span>{{ article.author }}</span>
+                                    <span>{{ article.category }}</span>
+                                    <span>{{ article.published_at|date:"d.m.Y" }}</span>
+                                </div>
+                                <a href="{% url 'news_detail' article.id %}" data-role="nav-link">Читать далее</a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        {% if articles %}
+            <ul class="news-list">
+                {% for article in articles %}
+                    <li>
+                        <article class="news-card">
+                            {% if article.image %}
+                                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image">
+                            {% endif %}
+                            <div>
+                                <h3>{{ article.title }}</h3>
+                                <p>{{ article.summary }}</p>
+                                <div class="news-meta">
+                                    <span>{{ article.author }}</span>
+                                    <span>{{ article.category }}</span>
+                                    <span>{{ article.published_at|date:"d.m.Y H:i" }}</span>
+                                    <span>{{ article.views_count }} просмотров</span>
+                                </div>
+                                {% if article.get_tags_list %}
+                                    <div class="tag-cloud">
+                                        {% for tag in article.get_tags_list %}
+                                            <span class="pill">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <a href="{% url 'news_detail' article.id %}" data-role="nav-link">Читать далее</a>
+                            </div>
+                        </article>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p data-note="important-tip">Новости не найдены. Измените условия поиска.</p>
+        {% endif %}
+
+        <aside class="page-section section--muted" data-note="info-tip">
+            <h2 class="section__title">Статистика подборки</h2>
+            <p><strong>Количество новостей:</strong> {{ articles|length }}</p>
+            {% if search_query %}<p><strong>Поисковый запрос:</strong> «{{ search_query }}»</p>{% endif %}
+            {% if current_category %}<p><strong>Категория:</strong> {{ current_category }}</p>{% endif %}
+        </aside>
+    </section>
+</div>
+{% endblock %}

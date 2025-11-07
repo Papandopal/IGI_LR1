@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Удобная и безопасная парковка в центре города. 24/7 видеонаблюдение, зарядные станции для электромобилей, доступные цены.">
+    <meta name="keywords" content="парковка, автостоянка, парковочные места, безопасная парковка, электромобили">
+    <title>{% block title %}PARKING - Удобная парковка{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" data-role="core-styles">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="page-body">
+    <header class="site-header" data-role="navigation">
+        <div class="layout-wide header-wrapper">
+            <a class="brand-link" data-role="brand-link" href="{% url 'home' %}">PARKING</a>
+            <nav class="primary-nav" aria-label="Основная навигация">
+                <ul class="nav-list" data-role="nav-list">
+                    <li class="nav-item"><a data-role="nav-link" href="{% url 'home' %}">Главная</a></li>
+                    <li class="nav-item"><a data-role="nav-link" href="{% url 'about_company' %}">О компании</a></li>
+                    <li class="nav-item"><a data-role="nav-link" href="{% url 'news' %}">Новости</a></li>
+                    <li class="nav-item"><a data-role="nav-link" href="{% url 'contacts' %}">Контакты</a></li>
+                    <li class="nav-item"><a data-role="nav-link" href="{% url 'vacancies' %}">Вакансии</a></li>
+                    <li class="nav-item">
+                        {% if user.is_authenticated %}
+                            <a data-role="nav-link" href="{% url 'reviews' %}">Отзывы</a>
+                        {% else %}
+                            <a data-role="nav-link" href="{% url 'signup' %}">Отзывы</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+            <div class="account-panel">
+                {% if user.is_authenticated %}
+                    <span class="user-label" data-role="user-indicator">{{ user.username }}</span>
+                    {% if is_admin %}
+                        <a class="account-link" data-role="nav-link" href="{% url 'admin_dashboard' %}">Админ-панель</a>
+                    {% elif is_client %}
+                        <a class="account-link" data-role="nav-link" href="{% url 'client_dashboard' %}">Личный кабинет</a>
+                    {% elif is_employee %}
+                        <a class="account-link" data-role="nav-link" href="{% url 'employee_dashboard' %}">Кабинет</a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" class="logout-form" data-role="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Выйти</button>
+                    </form>
+                {% else %}
+                    <a class="account-link" data-role="nav-link" href="{% url 'login' %}">Войти</a>
+                    <a class="account-link" data-role="nav-link" href="{% url 'signup' %}">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main" data-role="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" data-role="global-footer">
+        <div class="layout-wide footer-columns">
+            <div class="footer-column">
+                <h2 class="footer-title">PARKING</h2>
+                <p class="footer-text">Удобная и безопасная парковка в центре города</p>
+                <p class="footer-text">© 2025 PARKING</p>
+            </div>
+            <div class="footer-column">
+                <h2 class="footer-title">Связаться с нами</h2>
+                <ul class="contact-list" data-role="contact-list">
+                    <li>Телефон: <a href="tel:+74951234567" data-role="nav-link">+7 (495) 123-45-67</a></li>
+                    <li>Email: <a href="mailto:info@parking.ru" data-role="nav-link">info@parking.ru</a></li>
+                    <li><a href="https://example.com/parking_rules.pdf" data-role="nav-link">Правила пользования</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h2 class="footer-title">Документы</h2>
+                <ul class="contact-list">
+                    <li><a href="{% url 'privacy_policy' %}" class="footer-link" data-doc="privacy">Политика конфиденциальности</a></li>
+                    <li><a href="{% url 'terms_dictionary' %}" class="footer-link" data-doc="dictionary">Словарь терминов</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

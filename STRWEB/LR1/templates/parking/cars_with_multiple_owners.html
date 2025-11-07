@@ -1,0 +1,16 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Автомобили с несколькими владельцами</h1>
+<ul>
+{% for car, owners in car_owners %}
+    <li>{{ car }}: 
+        {% for owner in owners %}
+            {{ owner.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+{% empty %}
+    <li>Нет автомобилей с несколькими владельцами</li>
+{% endfor %}
+</ul>
+{% endblock %}

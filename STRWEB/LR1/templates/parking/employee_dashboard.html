@@ -1,0 +1,42 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Панель сотрудника</h1>
+<h2>Добро пожаловать, {{ employee.name }}!</h2>
+
+<h2>Клиенты</h2>
+<ul>
+{% for client in clients %}
+    <li>{{ client.name }} ({{ client.email }}) - Возраст: {{ client.age }}</li>
+{% endfor %}
+</ul>
+
+<h2>Счета</h2>
+<ul>
+{% for invoice in invoices %}
+    <li>Счёт #{{ invoice.code }}: {{ invoice.spot_price }} BYN 
+        {% if invoice.debt > 0 %}
+            (Долг: {{ invoice.debt }} BYN)
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Занятые места</h2>
+<ul>
+{% for spot in occupied_spots %}
+    <li>Место #{{ spot.number }}: {{ spot.car.brand }} {{ spot.car.model }} - Владельцы: 
+        {% for client in spot.car.clients.all %}
+            {{ client.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+
+<h2>Клиенты с долгами</h2>
+<ul>
+{% for client in clients_with_debt %}
+    <li>{{ client.name }}: {{ client.total_debt }} BYN</li>
+{% endfor %}
+</ul>
+{% endblock %}

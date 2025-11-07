@@ -1,0 +1,260 @@
+{% extends 'parking/base.html' %}
+{% load static %}
+{% block title %}Главная - PARKING{% endblock %}
+{% block content %}
+<div class="layout-wide">
+    <section class="page-section section--highlight" data-section="hero">
+        <div class="hero-layout">
+            <div class="hero-copy">
+                <h1 class="section__title">Парковка, которой можно доверять</h1>
+                <p class="section__subtitle">Сохраняем автомобили в безопасности, экономим ваше время и помогаем выбрать оптимальный тариф.</p>
+                <div class="quote-block" data-note="important-tip">
+                    <p>Нам доверяют компании, резиденты бизнес-центров и гости столицы.</p>
+                    <q lang="ru">Своевременное бронирование парковки избавляет от лишнего стресса</q>
+                    <br>
+                    <q lang="en">Parking should feel effortless and safe for every driver</q>
+                </div>
+                <ul class="feature-grid">
+                    <li>24/7 видеонаблюдение и охрана</li>
+                    <li>Зарядные станции для электромобилей</li>
+                    <li>Гибкая система тарифов и промокодов</li>
+                </ul>
+            </div>
+            <form class="simple-form" data-note="availability-tip">
+                <legend>Быстрая бронь парковочного места</legend>
+                <label for="user-name">Имя
+                    <input id="user-name" name="user-name" type="text" required placeholder="Например, Анна">
+                </label>
+                <label for="user-contact-email">Email
+                    <input id="user-contact-email" name="user-contact-email" type="email" placeholder="name@example.com">
+                </label>
+                <label for="user-car-count">Количество автомобилей
+                    <input id="user-car-count" name="user-car-count" type="number" min="1" max="3" value="1">
+                </label>
+                <label for="arrival-date">Дата приезда
+                    <input id="arrival-date" name="arrival-date" type="date" required>
+                </label>
+                <label for="promo-code" data-status="disabled">Промокод (будет доступен позже)
+                    <input id="promo-code" name="promo-code" type="text" value="WELCOME" disabled>
+                </label>
+                <fieldset class="choices-group" data-note="info-tip">
+                    <legend>Предпочтения</legend>
+                    <label class="choice-option">
+                        <input type="checkbox" name="options" value="charge" checked>
+                        <span>Зарядка для электромобилей</span>
+                    </label>
+                    <label class="choice-option">
+                        <input type="checkbox" name="options" value="security">
+                        <span>Дополнительный патруль охраны</span>
+                    </label>
+                    <label class="choice-option">
+                        <input type="radio" name="access" value="24h" checked>
+                        <span>Круглосуточный доступ</span>
+                    </label>
+                    <label class="choice-option">
+                        <input type="radio" name="access" value="daytime">
+                        <span>Дневной доступ</span>
+                    </label>
+                </fieldset>
+                <button type="submit" class="submit-button">Забронировать</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="page-section" data-section="banners">
+        <h2 class="section__title">Наши преимущества</h2>
+        <div class="banners-strip">
+            {% for banner in banners %}
+                <article class="banner-card" data-role="banner-card">
+                    <h3>{{ banner.title }}</h3>
+                    <p>{{ banner.description }}</p>
+                    {% if banner.link_url %}
+                        <a href="{{ banner.link_url }}" data-role="nav-link">Узнать больше</a>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <article class="banner-card">
+                    <h3>Безопасная парковка</h3>
+                    <p>24/7 видеонаблюдение, охрана и страховка.</p>
+                </article>
+                <article class="banner-card">
+                    <h3>Специальные тарифы</h3>
+                    <p>Скидка 20% на первый месяц парковки для новых клиентов.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="page-section" data-section="services">
+        <h2 class="section__title">Каталог услуг</h2>
+        <form method="get" class="news-controls" data-role="filter-bar">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск по услугам...">
+            <select name="category">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                    <option value="{{ category.name }}" {% if category_filter == category.name %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="price_sort">
+                <option value="">Без сортировки</option>
+                <option value="asc" {% if price_sort == 'asc' %}selected{% endif %}>По возрастанию</option>
+                <option value="desc" {% if price_sort == 'desc' %}selected{% endif %}>По убыванию</option>
+            </select>
+            <button type="submit" class="submit-button">Применить</button>
+            {% if category_filter or search_query or price_sort %}
+                <a href="{% url 'home' %}" data-role="nav-link">Сбросить фильтры</a>
+            {% endif %}
+        </form>
+        <div class="grid-two">
+            {% for service in services %}
+                <article class="card">
+                    <h3>{{ service.name }}</h3>
+                    <p>{{ service.description }}</p>
+                    <div class="news-meta">
+                        <span>{{ service.category.name }}</span>
+                        <span>{{ service.price }} руб.</span>
+                    </div>
+                </article>
+            {% empty %}
+                <p data-note="important-tip">Услуги не найдены. Измените параметры фильтрации.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if last_new %}
+    <section class="page-section section--muted" data-section="news">
+        <h2 class="section__title">Последние новости</h2>
+        <article class="news-card" data-role="featured">
+            {% if last_new.image_url %}
+                <img src="{{ last_new.image_url }}" alt="{{ last_new.title }}" class="article-image">
+            {% endif %}
+            <div>
+                <h3>{{ last_new.title }}</h3>
+                <p>{{ last_new.summary }}</p>
+                <div class="news-meta">
+                    <span>{{ last_new.created_at|date:"d.m.Y" }}</span>
+                </div>
+                <a href="{% url 'news' %}" data-role="nav-link">Читать все новости</a>
+            </div>
+        </article>
+    </section>
+    {% endif %}
+
+    <section class="page-section" data-section="metrics">
+        <h2 class="section__title">Годовые показатели</h2>
+        <table class="metrics-table">
+            <thead>
+                <tr>
+                    <th>Показатель</th>
+                    <th>Значение</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Средняя стоимость аренды</td>
+                    <td>{{ avg_rental|floatformat:2 }} руб.</td>
+                    <td>По всем тарифам за последние 12 месяцев</td>
+                </tr>
+                <tr>
+                    <td>Медианный возраст клиента</td>
+                    <td>{{ avg_age|floatformat:1 }} лет</td>
+                    <td>Среди активных пользователей</td>
+                </tr>
+                <tr>
+                    <td>Самое популярное место</td>
+                    <td>Парковка №{{ most_profitable_spot }}</td>
+                    <td data-note="important-tip">Рекомендуем бронировать заранее</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="page-section" data-section="partners">
+        <h2 class="section__title">Наши партнёры</h2>
+        <div class="partners-grid">
+            {% for partner in partners %}
+                <article class="partner-card">
+                    <a href="{{ partner.website_url|default:'#' }}" target="_blank" data-role="nav-link">
+                        <h3>{{ partner.name }} 🔗</h3>
+                        {% if partner.description %}
+                            <p>{{ partner.description }}</p>
+                        {% endif %}
+                    </a>
+                </article>
+            {% empty %}
+                <article class="partner-card" data-status="placeholder">
+                    <h3>AUTO SERVICE 🔗</h3>
+                    <p>Автосервис</p>
+                </article>
+                <article class="partner-card" data-status="placeholder">
+                    <h3>PARK TECH 🔗</h3>
+                    <p>Технологии парковки</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="page-section section--muted" data-section="promos">
+        <h2 class="section__title">Актуальные акции и купоны</h2>
+        <div class="promos-grid">
+            <div class="promo-card card highlight">
+                <h3>Промокоды</h3>
+                {% for promo in promo_codes %}
+                    <p><strong>{{ promo.code }}</strong> — действует до {{ promo.valid_until|date:"d.m.Y" }}</p>
+                {% empty %}
+                    <p>Нет активных промокодов</p>
+                {% endfor %}
+            </div>
+            <div class="promo-card card">
+                <h3>Купоны</h3>
+                {% for coupon in coupons %}
+                    <p><strong>{{ coupon.code }}</strong> — действует до {{ coupon.valid_until|date:"d.m.Y" }}</p>
+                {% empty %}
+                    <p>Нет активных купонов</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section" data-section="fun">
+        <h2 class="section__title">Для душевного настроения</h2>
+        <div class="fun-grid">
+            <article class="fun-card">
+                <h3>Шутка дня</h3>
+                <p>{{ joke.setup }}</p>
+                <p><strong>{{ joke.punchline }}</strong></p>
+            </article>
+            <article class="fun-card" data-note="important-tip">
+                <h3>Цитата дня</h3>
+                <q lang="ru">{{ quote.body }}</q>
+                <p>— {{ quote.author }}</p>
+            </article>
+        </div>
+    </section>
+
+    {% if is_admin or is_employee %}
+    <section class="page-section" data-section="stats">
+        <h2 class="section__title">Статистика для команды</h2>
+        <div class="stat-cards">
+            <article class="stat-card">
+                <span class="stat-label">Общая прибыль</span>
+                <span class="stat-value">{{ total_profit }} руб.</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Средняя аренда</span>
+                <span class="stat-value">{{ avg_rental|floatformat:2 }} руб.</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Средний возраст клиентов</span>
+                <span class="stat-value">{{ avg_age|floatformat:1 }} лет</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Самое прибыльное место</span>
+                <span class="stat-value">№{{ most_profitable_spot }}</span>
+            </article>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'parking/base.html' %}
+
+{% block content %}
+<h1>Отзывы</h1>
+<ul>
+{% for review in reviews %}
+    <li>
+        <h3>{{ review.user.username }}</h3>
+        <p>Оценка: {{ review.rating }} из 5</p>
+        <p>{{ review.text }}</p>
+        <p>Дата: {{ review.created_at|date:"d/m/Y H:i" }}</p>
+    </li>
+{% empty %}
+    <li>Нет отзывов.</li>
+{% endfor %}
+</ul>
+{% if is_client %}
+    <button onclick="document.getElementById('reviewForm').style.display='block'">Добавить отзыв</button>
+    <div id="reviewForm" style="display:none;">
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="text" required placeholder="Ваш отзыв"></textarea><br>
+            <select name="rating" required>
+                {% for i in "12345" %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select><br>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+{% else %}
+    {% if not user.is_authenticated %}
+        <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'signup' %}">зарегистрируйтесь</a>, чтобы оставить отзыв.</p>
+    {% elif is_admin %}
+        <p>Администраторы могут просматривать отзывы, но не добавлять их.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

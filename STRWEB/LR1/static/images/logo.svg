@@ -1,0 +1,6 @@
+<svg width="200" height="60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="60" fill="#2c3e50" rx="10"/>
+  <text x="100" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">PARKING</text>
+  <text x="100" y="50" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#ecf0f1">УДОБНАЯ ПАРКОВКА</text>
+</svg>
+

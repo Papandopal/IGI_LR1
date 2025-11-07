@@ -1,0 +1,6 @@
+<svg width="150" height="80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="150" height="80" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2" rx="8"/>
+  <text x="75" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#495057">AUTO</text>
+  <text x="75" y="55" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#6c757d">SERVICE</text>
+</svg>
+

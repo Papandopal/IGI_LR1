@@ -1,13 +1,23 @@
 {% extends 'parking/base.html' %}
 
 {% block content %}
-<h1>Вход</h1>
-<form method="POST">
-    {% csrf_token %}
-    <label for="username">Имя пользователя:</label>
-    <input type="text" name="username" required>
-    <label for="password">Пароль:</label>
-    <input type="password" name="password" required>
-    <button type="submit">Войти</button>
-</form>
+<div class="layout-wide">
+    <section class="page-section" data-section="auth">
+        <h1 class="section__title">Вход в систему</h1>
+        <form method="post" class="simple-form" data-mode="inline">
+            {% csrf_token %}
+            <label for="id_username">Имя пользователя
+                <input id="id_username" type="text" name="username" required autocomplete="username" placeholder="Введите логин">
+            </label>
+            <label for="id_password">Пароль
+                <input id="id_password" type="password" name="password" required autocomplete="current-password" placeholder="Введите пароль">
+            </label>
+            <label class="choice-option">
+                <input type="checkbox" name="remember" value="1">
+                <span>Запомнить меня</span>
+            </label>
+            <button type="submit" class="submit-button">Войти</button>
+        </form>
+    </section>
+</div>
 {% endblock %}

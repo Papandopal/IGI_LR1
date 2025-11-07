@@ -1,7 +1,131 @@
 {% extends 'parking/base.html' %}
-
+{% block title %}О компании — PARKING{% endblock %}
 {% block content %}
-<h1>О компании</h1>
-<p>Мы — компания, предоставляющая услуги парковки и управления парковочными местами. Наша миссия — обеспечить удобство и безопасность для всех наших клиентов.</p>
-<p>С момента основания мы стремимся к инновациям и высокому качеству обслуживания.</p>
+<div class="layout-wide">
+    <section class="page-section section--highlight" data-section="company-overview">
+        <h1 class="section__title">{{ company_info.name|default:"PARKING" }}</h1>
+        <p class="section__subtitle">{{ company_info.description|default:"Мы создаём безопасные парковочные пространства и цифровые сервисы для водителей." }}</p>
+        <div class="grid-two">
+            <div>
+                <h2>Наша миссия</h2>
+                <p>{{ company_info.mission|default:"Повышать комфорт городской мобильности с помощью понятных и честных решений." }}</p>
+                <div class="quote-block">
+                    <q lang="ru">Технологии и забота о клиентах двигают нас вперёд</q>
+                    <br>
+                    <q lang="de">Vertrauen entsteht durch Transparenz und Service</q>
+                </div>
+            </div>
+            <div>
+                <h2>Наше видение</h2>
+                <p>{{ company_info.vision|default:"Создать сеть умных парковок, доступных 24/7, с устойчивым подходом к инфраструктуре." }}</p>
+                <table class="terms-table">
+                    <tbody>
+                        <tr>
+                            <td>Год основания</td>
+                            <td>{{ company_info.founded_year|default:2012 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Команда</td>
+                            <td>{{ company_info.employees_count|default:42 }} специалистов</td>
+                        </tr>
+                        <tr>
+                            <td>Клиенты</td>
+                            <td>{{ company_info.clients_count|default:1200 }} постоянных пользователей</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section" data-section="company-history">
+        <h2 class="section__title">История развития</h2>
+        <ul class="timeline-list">
+            {% for item in history_items %}
+                <li>
+                    <h3>{{ item.year }} — {{ item.title }}</h3>
+                    <p>{{ item.description }}</p>
+                </li>
+            {% empty %}
+                <li data-note="important-tip">История пока не заполнена. Добавьте записи через панель администратора.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="page-section section--muted" data-section="company-values">
+        <h2 class="section__title">Наши ценности</h2>
+        <ul class="feature-grid">
+            <li>Ответственность за безопасность клиентов</li>
+            <li>Прозрачность тарифов и процессов</li>
+            <li>Экологические инициативы и энергоэффективность</li>
+        </ul>
+        {% if company_info.values %}
+            <p>{{ company_info.values|linebreaks }}</p>
+        {% endif %}
+    </section>
+
+    <section class="page-section" data-section="company-video">
+        <h2 class="section__title">Видео о нас</h2>
+        {% if company_info.video_url %}
+            <div class="card">
+                <iframe src="{{ company_info.video_url }}" title="Видео о компании" style="width: 100%; min-height: 360px; border: none; border-radius: 12px;" allowfullscreen></iframe>
+            </div>
+        {% else %}
+            <div class="card" data-note="info-tip">
+                <p>Видеопрезентация появится тут в ближайшее время.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="page-section" data-section="company-requisites">
+        <h2 class="section__title">Реквизиты</h2>
+        {% if requisites %}
+            <table class="terms-table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>Банк</th>
+                        <th>Телефон</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requisites %}
+                        <tr>
+                            <td>{{ req.legal_name }}</td>
+                            <td>{{ req.bank_name }} / {{ req.bik }}</td>
+                            <td>{{ req.phone }}</td>
+                            <td>{{ req.email }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p data-note="important-tip">Реквизиты компании ещё не добавлены.</p>
+        {% endif %}
+    </section>
+
+    <section class="page-section" data-section="company-certificates">
+        <h2 class="section__title">Сертификаты и лицензии</h2>
+        <div class="faq-list">
+            {% for cert in certificates %}
+                <details>
+                    <summary>{{ cert.name }}</summary>
+                    <div>
+                        <p>{{ cert.description }}</p>
+                        <p><strong>Номер:</strong> {{ cert.certificate_number|default:"—" }}</p>
+                        <p><strong>Выдан:</strong> {{ cert.issued_by|default:"—" }}</p>
+                        {% if cert.issued_date %}<p><strong>Дата выдачи:</strong> {{ cert.issued_date|date:"d.m.Y" }}</p>{% endif %}
+                        {% if cert.expiry_date %}<p><strong>Действует до:</strong> {{ cert.expiry_date|date:"d.m.Y" }}</p>{% endif %}
+                        {% if cert.document_url %}
+                            <a href="{{ cert.document_url }}" data-role="nav-link">Скачать документ</a>
+                        {% endif %}
+                    </div>
+                </details>
+            {% empty %}
+                <p data-note="info-tip">Добавьте сертификаты через панель администратора, чтобы отобразить их здесь.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

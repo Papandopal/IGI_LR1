@@ -58,6 +58,7 @@ urlpatterns = [
     path('invoices/<int:invoice_id>/pay/', pay_invoice, name='pay_invoice'),
     path('about/', about_company, name='about_company'),
     path('news/', news, name='news'),
+    path('news/<int:pk>/', news_detail, name='news_detail'),
     path('terms/', terms_dictionary, name='terms_dictionary'),
     path('contacts/', contacts, name='contacts'),
     path('privacy/', privacy_policy, name='privacy_policy'),
